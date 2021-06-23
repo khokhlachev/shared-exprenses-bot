@@ -8,16 +8,17 @@
     "start": "node dist/index.js",
     "dev": "yarn watch",
     "build": "tsc",
-    "watch": "tsc -w",
-    "heroku": "heroku git:remote -a shared-expenses-tg-bot"
+    "watch": "tsc -w"
   },
   "devDependencies": {
+    "@types/express": "4.17.12",
     "dotenv": "10.0.0",
     "prettier": "2.3.1",
     "typescript": "4.3.4"
   },
   "dependencies": {
     "@supabase/supabase-js": "1.15.1",
+    "express": "4.17.1",
     "telegraf": "4.3.0"
   }
 }

@@ -1,3 +1,4 @@
+import express from "express"
 import { createClient } from "@supabase/supabase-js"
 import {
   SUPABASE_URL,
@@ -7,8 +8,16 @@ import {
 } from "./util/secrets"
 import { Telegraf } from "telegraf"
 
+const port = process.env.PORT || 3000
+const expressApp = express()
+
+expressApp.get("/", (req, res) => {
+  res.send("Hello World!")
+})
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 const bot = new Telegraf(TELEGRAM_BOT_TOKEN)
+bot.launch()
 
 const HELP_MESSAGE =
   "Мне можно писать в таком формате: магаз сумма. Оба слова через пробел, сумма просто цифрой"
@@ -59,10 +68,18 @@ bot.on("text", async (ctx) => {
   }
 })
 
-bot.launch()
+const server = expressApp.listen(port, async () => {
+  console.log(`Bot is up`)
+})
 
 // Enable graceful stop
-process.once("SIGINT", () => bot.stop("SIGINT"))
-process.once("SIGTERM", () => bot.stop("SIGTERM"))
+process.once("SIGINT", () => {
+  server.close()
+  bot.stop("SIGINT")
+})
+process.once("SIGTERM", () => {
+  server.close()
+  bot.stop("SIGTERM")
+})
 
 export {}
