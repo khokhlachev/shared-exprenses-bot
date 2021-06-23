@@ -1,0 +1,21 @@
+{
+  "name": "shared-expenses-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Sergey Khokhlachev <sergey@khokhlachev.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "yarn watch",
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "dotenv": "10.0.0",
+    "prettier": "2.3.1",
+    "typescript": "4.3.4"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "1.15.1",
+    "telegraf": "4.3.0"
+  }
+}
