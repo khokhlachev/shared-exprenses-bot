@@ -5,9 +5,11 @@
   "author": "Sergey Khokhlachev <sergey@khokhlachev.com>",
   "license": "MIT",
   "scripts": {
+    "start": "node dist/index.js",
     "dev": "yarn watch",
     "build": "tsc",
-    "watch": "tsc -w"
+    "watch": "tsc -w",
+    "heroku": "heroku git:remote -a shared-expenses-tg-bot"
   },
   "devDependencies": {
     "dotenv": "10.0.0",
