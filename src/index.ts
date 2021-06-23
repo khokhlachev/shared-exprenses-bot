@@ -17,7 +17,10 @@ expressApp.get("/", (req, res) => {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 const bot = new Telegraf(TELEGRAM_BOT_TOKEN)
-bot.launch()
+bot.launch().catch((err) => {
+  console.error(err)
+  throw new Error("Launch failed")
+})
 
 const HELP_MESSAGE =
   "Мне можно писать в таком формате: магаз сумма. Оба слова через пробел, сумма просто цифрой"
@@ -27,12 +30,67 @@ const STORE_ABBR: Record<string, string> = {
   вв: "ВкусВилл",
   азбука: "Азбука Вкуса",
   перек: "Перекресток",
+  макдак: "McDonalds",
 }
+
+const TG_ID_USERNAME: Record<string, string> = {
+  136068023: "Аня потратила",
+  185625876: "Сережа потратил",
+}
+
+const MONTH_NAME_RUS: string[] = [
+  "январе",
+  "феврале",
+  "марте",
+  "апреле",
+  "мае",
+  "июне",
+  "июле",
+  "августе",
+  "сентябре",
+  "октябре",
+  "ноябре",
+  "декабре",
+]
 
 bot.start((ctx) => {
   ctx.reply("Ну здравствуйте!")
 })
 bot.help((ctx) => ctx.reply(HELP_MESSAGE))
+
+bot.hears("статистика", async (ctx) => {
+  const fromId = ctx.from.id
+
+  if (!ALLOWED_TG_ID.includes(fromId)) {
+    ctx.reply(`401 Unauthorized`)
+    return
+  }
+
+  const { data, error } = await supabase.from("sum_by_user_by_month").select()
+
+  if (error) {
+    console.error(error)
+    ctx.reply(`Упс. Ошибка`)
+    return
+  }
+
+  const byMonth = data?.reduce((acc, obj) => {
+    acc[obj.mon] ? acc[obj.mon].push(obj) : (acc[obj.mon] = [obj])
+    return acc
+  }, {})
+
+  const responseText = Object.keys(byMonth).reduce((acc: string, k: string) => {
+    for (const monthData of byMonth[k]) {
+      acc += `В ${MONTH_NAME_RUS[monthData.mon - 1]} ${
+        TG_ID_USERNAME[monthData.from_tg_id]
+      } ${monthData.Sum}₽\n`
+    }
+    return acc
+  }, "")
+
+  ctx.reply(responseText)
+})
+bot.hears("статистика по магазинам", (ctx) => {})
 
 bot.on("text", async (ctx) => {
   const fromId = ctx.from.id
@@ -42,7 +100,7 @@ bot.on("text", async (ctx) => {
     return
   }
 
-  const RECORD_REGEX = /([A-Za-zА-Яа-я0-9]+)\s(\d+)/
+  const RECORD_REGEX = /^([A-Za-zА-Яа-я0-9\s]+)\s(\d+)$/
   if (RECORD_REGEX.test(ctx.message?.text)) {
     const [_, store, sum] = ctx.message.text.match(RECORD_REGEX)!
 
