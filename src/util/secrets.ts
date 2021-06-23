@@ -11,6 +11,7 @@ export const ENV = process.env.NODE_ENV
 export const SUPABASE_URL = process.env.SUPABASE_URL!
 export const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY!
 export const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!
+export const BOT_URL = process.env.BOT_URL
 
 export const ALLOWED_TG_ID = [185625876, 136068023]
 
