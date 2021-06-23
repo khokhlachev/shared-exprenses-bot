@@ -54,15 +54,15 @@ const MONTH_NAME_RUS: string[] = [
 ]
 
 bot.start((ctx) => {
-  ctx.reply("Ну здравствуйте!")
+  ctx.reply(`Ну привет!`)
 })
 bot.help((ctx) => ctx.reply(HELP_MESSAGE))
 
-bot.hears("статистика", async (ctx) => {
+bot.hears(/статистика/i, async (ctx) => {
   const fromId = ctx.from.id
 
   if (!ALLOWED_TG_ID.includes(fromId)) {
-    ctx.reply(`401 Unauthorized`)
+    ctx.reply(`${fromId} unauthorized`)
     return
   }
 
@@ -96,7 +96,7 @@ bot.on("text", async (ctx) => {
   const fromId = ctx.from.id
 
   if (!ALLOWED_TG_ID.includes(fromId)) {
-    ctx.reply(`401 Unauthorized`)
+    ctx.reply(`${fromId} unauthorized`)
     return
   }
 
