@@ -7,11 +7,13 @@ import {
   ALLOWED_TG_ID,
   BOT_URL,
 } from "./util/secrets"
-import formatNumber from "./util/formatNumber"
+import { formatNumber, capitalize } from "./util"
+import { doughnutChart, linearChart } from "./util/quickchart"
 import {
   HELP_MESSAGE,
   STORE_ABBR,
   TG_ID_USERNAME,
+  TG_ID_COLOR,
   MONTH_NAME_RUS,
 } from "./constants"
 
@@ -40,7 +42,7 @@ bot.start((ctx) => {
   ctx.reply(`Ну привет!`)
 })
 
-bot.use((ctx, next) => {
+function authMiddleware(ctx: Context, next: () => Promise<any>) {
   const fromId = ctx.from?.id
 
   if (!fromId || !ALLOWED_TG_ID.includes(fromId)) {
@@ -48,7 +50,9 @@ bot.use((ctx, next) => {
   } else {
     return next()
   }
-})
+}
+
+bot.use(authMiddleware)
 
 bot.catch((err, ctx) => {
   console.error(err)
@@ -65,8 +69,8 @@ bot.command("abbr", (ctx) => {
   )
 })
 
-async function handleReport(ctx: Context, viewName: string) {
-  const { data, error } = await supabase.from(viewName).select()
+bot.command("month", async (ctx) => {
+  const { data, error } = await supabase.from("sum_by_user_this_month").select()
 
   if (error) {
     throw new Error(error.toString())
@@ -76,37 +80,51 @@ async function handleReport(ctx: Context, viewName: string) {
     throw new Error("No data")
   }
 
-  const byMonth = data.reduce((acc, obj) => {
-    acc[obj.mon] ? acc[obj.mon].push(obj) : (acc[obj.mon] = [obj])
-    return acc
-  }, {})
-
-  const responseText = Object.keys(byMonth).reduce(
-    (acc: string, k: string, i) => {
-      for (const monthData of byMonth[k]) {
-        acc += `В ${MONTH_NAME_RUS[monthData.mon - 1]} ${
-          TG_ID_USERNAME[monthData.from_tg_id]
-        } *${formatNumber(monthData.Sum)} ₽*\n`
-      }
-
-      if (i > 0) {
-        acc += "\n"
-      }
-
-      return acc
-    },
-    ""
+  return ctx.replyWithPhoto(
+    doughnutChart({
+      title: `Общие расходы за ${MONTH_NAME_RUS[data[0].mon - 1]}`,
+      data: data.map(({ Sum }) => Sum),
+      labels: data.map(({ from_tg_id }) => TG_ID_USERNAME[from_tg_id]),
+      colors: data.map(({ from_tg_id }) => TG_ID_COLOR[from_tg_id]),
+    })
   )
-
-  return ctx.replyWithMarkdown(responseText)
-}
-
-bot.command("month", async (ctx) => {
-  return handleReport(ctx, "sum_by_user_this_month")
 })
 
 bot.command("year", async (ctx) => {
-  return handleReport(ctx, "sum_by_user_by_month")
+  const { data, error } = await supabase.from("sum_by_user_by_month").select()
+
+  if (error) {
+    throw new Error(error.toString())
+  }
+
+  if (!data) {
+    throw new Error("No data")
+  }
+
+  const byId = data.reduce((acc, obj) => {
+    acc[obj.from_tg_id]
+      ? acc[obj.from_tg_id].push(obj)
+      : (acc[obj.from_tg_id] = [obj])
+    return acc
+  }, {})
+
+  return ctx.replyWithPhoto(
+    linearChart({
+      title: "В этом году мы тратили",
+      datasets: Object.keys(byId).map((id) => {
+        return {
+          label: TG_ID_USERNAME[id],
+          data: byId[id]
+            .map(({ Sum }: { Sum: number }) => Sum)
+            .concat(byId[id][byId[id].length - 1].Sum),
+          borderColor: TG_ID_COLOR[id],
+        }
+      }),
+      labels: [
+        ...new Set(data.map(({ mon }) => capitalize(MONTH_NAME_RUS[mon - 1]))),
+      ],
+    })
+  )
 })
 
 bot.command("store_month", async (ctx) => {
@@ -137,7 +155,7 @@ bot.on("text", async (ctx) => {
   if (RECORD_REGEX.test(ctx.message?.text)) {
     const [_, store, sum] = ctx.message.text.match(RECORD_REGEX)!
 
-    const storeFullName = STORE_ABBR[store.toLowerCase()] || store
+    const storeFullName = capitalize(STORE_ABBR[store.toLowerCase()] || store)
 
     const { error } = await supabase
       .from("expenses")
@@ -152,8 +170,6 @@ bot.on("text", async (ctx) => {
     ]
 
     ctx.reply(`${predicate}: ${storeFullName}, ${formatNumber(sum)} ₽`)
-  } else {
-    ctx.reply(HELP_MESSAGE)
   }
 })
 

@@ -1,4 +1,4 @@
-const formatNumber = (
+export const formatNumber = (
   n: number | string,
   fraction = 3,
   chars = " "
@@ -18,4 +18,6 @@ const formatNumber = (
   return s
 }
 
-export default formatNumber
+export const capitalize = (s: string) => {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
