@@ -16,6 +16,6 @@ $ yarn start
 
 The bot uses `polling` when running locally and `webhooks` in `production`.
 
-`Webhooks` mode allows run on [Heroku](https://www.heroku.com/) free tier, and `polling` allows to easily run on local.
+`Webhooks` mode allows run on [Heroku](https://www.heroku.com/) free tier, because a `POST` request can wake up a free `dyno`, and `polling` allows to easily run on local.
 
 ## License [MIT](LICENSE)
