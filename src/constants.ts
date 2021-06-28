@@ -1,12 +1,20 @@
 export const HELP_MESSAGE =
   "Мне можно писать в таком формате: магаз сумма. Оба слова через пробел, сумма просто цифрой"
 
-export const STORE_ABBR: Record<string, string> = {
+export const STORE_ABBR_DICT: Record<string, string> = {
   вкусвилл: "ВкусВилл",
   вв: "ВкусВилл",
   азбука: "Азбука Вкуса",
   перек: "Перекресток",
   макдак: "McDonalds",
+  озон: "Ozon",
+  маркет: "Яндекс.Маркет",
+  лавка: "Яндекс.Лавка",
+  aйклауд: "iCloud",
+  нетфликс: "Netflix",
+  каршер: "Каршеринг",
+  пятерка: "Пятерочка",
+  "5ка": "Пятерочка",
 }
 
 export const TG_ID_VERB: Record<string, string> = {

@@ -11,7 +11,7 @@ import { formatNumber, capitalize } from "./util"
 import { doughnutChart, linearChart } from "./util/quickchart"
 import {
   HELP_MESSAGE,
-  STORE_ABBR,
+  STORE_ABBR_DICT,
   TG_ID_USERNAME,
   TG_ID_COLOR,
   MONTH_NAME_RUS,
@@ -63,8 +63,8 @@ bot.help((ctx) => ctx.reply(HELP_MESSAGE))
 
 bot.command("abbr", (ctx) => {
   ctx.reply(
-    Object.keys(STORE_ABBR).reduce((acc, k) => {
-      return acc + `${k}: ${STORE_ABBR[k]}\n`
+    Object.keys(STORE_ABBR_DICT).reduce((acc, k) => {
+      return acc + `${k}: ${STORE_ABBR_DICT[k]}\n`
     }, "")
   )
 })
@@ -155,7 +155,9 @@ bot.on("text", async (ctx) => {
   if (RECORD_REGEX.test(ctx.message?.text)) {
     const [_, store, sum] = ctx.message.text.match(RECORD_REGEX)!
 
-    const storeFullName = capitalize(STORE_ABBR[store.toLowerCase()] || store)
+    const storeFullName = capitalize(
+      STORE_ABBR_DICT[store.toLowerCase()] || store
+    )
 
     const { error } = await supabase
       .from("expenses")
