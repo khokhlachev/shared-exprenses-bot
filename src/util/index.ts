@@ -4,6 +4,7 @@ export const formatNumber = (
   chars = " "
 ): string => {
   let s = typeof n === "number" ? `${n}` : n
+  const sign = s.charAt(0) === "-" ? 1 : 0
 
   if (s.length < fraction) {
     return s
@@ -11,7 +12,7 @@ export const formatNumber = (
 
   const len = s.length
 
-  for (let i = len - fraction; i > 0; i -= fraction) {
+  for (let i = len - fraction; i > sign; i -= fraction) {
     s = `${s.slice(0, i)}${chars}${s.slice(i)}`
   }
 
