@@ -80,9 +80,13 @@ bot.command("month", async (ctx) => {
     throw new Error("No data")
   }
 
+  const sum = data.reduce((acc, { Sum }) => acc + Sum, 0)
+
   return ctx.replyWithPhoto(
     doughnutChart({
-      title: `Общие расходы за ${MONTH_NAME_RUS[data[0].mon - 1]}`,
+      title: `За ${MONTH_NAME_RUS[data[0].mon - 1]} мы потратили ${formatNumber(
+        sum
+      )} руб.`,
       data: data.map(({ Sum }) => Sum),
       labels: data.map(({ from_tg_id }) => TG_ID_USERNAME[from_tg_id]),
       colors: data.map(({ from_tg_id }) => TG_ID_COLOR[from_tg_id]),
@@ -108,9 +112,11 @@ bot.command("year", async (ctx) => {
     return acc
   }, {})
 
+  const sum = data.reduce((acc, { Sum }) => acc + Sum, 0)
+
   return ctx.replyWithPhoto(
     linearChart({
-      title: "В этом году мы тратили",
+      title: `В этом году мы потратили ${formatNumber(sum)} руб.`,
       datasets: Object.keys(byId).map((id) => {
         return {
           label: TG_ID_USERNAME[id],
@@ -140,10 +146,12 @@ bot.command("store_month", async (ctx) => {
     throw new Error("No data")
   }
 
+  const sum = data.reduce((acc, { sum }) => acc + sum, 0)
+
   const responseText = data.reduce((acc: string, obj: any) => {
     acc += `*${obj.store_name}*: ${formatNumber(obj.sum)} ₽\n`
     return acc
-  }, "В этом месяце мы потратили:\n\n")
+  }, `В этом месяце мы потратили ${formatNumber(sum)} ₽:\n\n`)
 
   return ctx.replyWithMarkdown(responseText)
 })
@@ -167,9 +175,15 @@ bot.on("text", async (ctx) => {
       throw new Error(error.toString())
     }
 
-    const predicate = ["Записал", "Сохранил", "Добавил", "Ок"][
-      Math.floor(Math.random() * 3)
-    ]
+    const predicate = [
+      "Записал",
+      "Сохранил",
+      "Добавил",
+      "Ок",
+      "✅",
+      "👌",
+      "🤑",
+    ][Math.floor(Math.random() * 6)]
 
     ctx.reply(`${predicate}: ${storeFullName}, ${formatNumber(sum)} ₽`)
   }
