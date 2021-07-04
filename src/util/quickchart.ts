@@ -1,7 +1,11 @@
 const urlFromConfig = (config: unknown) => {
+  /**
+   * Telegram replyWithPhoto API method breaks
+   * if a period is not encoded
+   */
   return `https://quickchart.io/chart?c=${encodeURIComponent(
     JSON.stringify(config)
-  )}`
+  ).replace(".", "%2E")}`
 }
 
 type LinearConfig = {
