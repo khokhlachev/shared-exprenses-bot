@@ -177,12 +177,12 @@ bot.on("text", async (ctx) => {
 
     const predicate = [
       "Записал",
+      "👌",
+      "🤑",
       "Сохранил",
       "Добавил",
       "Ок",
       "✅",
-      "👌",
-      "🤑",
     ][Math.floor(Math.random() * 6)]
 
     ctx.reply(`${predicate}: ${storeFullName}, ${formatNumber(sum)} ₽`)
