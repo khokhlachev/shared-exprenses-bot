@@ -8,7 +8,7 @@ import {
   BOT_URL,
 } from "./util/secrets"
 import { formatNumber, capitalize } from "./util"
-import { doughnutChart, linearChart } from "./util/quickchart"
+import { doughnutChart, barChart } from "./util/quickchart"
 import {
   HELP_MESSAGE,
   STORE_ABBR_DICT,
@@ -115,15 +115,13 @@ bot.command("year", async (ctx) => {
   const sum = data.reduce((acc, { Sum }) => acc + Sum, 0)
 
   return ctx.replyWithPhoto(
-    linearChart({
+    barChart({
       title: `В этом году мы потратили ${formatNumber(sum)} руб.`,
       datasets: Object.keys(byId).map((id) => {
         return {
           label: TG_ID_USERNAME[id],
-          data: byId[id]
-            .map(({ Sum }: { Sum: number }) => Sum)
-            .concat(byId[id][byId[id].length - 1].Sum),
-          borderColor: TG_ID_COLOR[id],
+          data: byId[id].map(({ Sum }: { Sum: number }) => Sum),
+          backgroundColor: TG_ID_COLOR[id],
         }
       }),
       labels: [

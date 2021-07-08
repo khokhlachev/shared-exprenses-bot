@@ -41,6 +41,38 @@ export const linearChart = ({ title, datasets, labels }: LinearConfig) => {
   return urlFromConfig(config)
 }
 
+type BarChartConfig = {
+  title: string
+  datasets: {
+    label: string
+    data: number[]
+    backgroundColor: string
+  }[]
+  labels: string[]
+}
+
+export const barChart = ({ title, datasets, labels }: BarChartConfig) => {
+  const config = {
+    type: "bar",
+    data: {
+      labels,
+      datasets,
+    },
+    options: {
+      title: {
+        display: true,
+        text: title,
+      },
+      scales: {
+        xAxes: [{ stacked: true }],
+        yAxes: [{ stacked: true }],
+      },
+    },
+  }
+
+  return urlFromConfig(config)
+}
+
 type DoughnutConfig = {
   title: string
   data: number[]
