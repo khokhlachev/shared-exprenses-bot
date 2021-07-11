@@ -157,7 +157,7 @@ bot.command("store_month", async (ctx) => {
 bot.on("text", async (ctx) => {
   const fromId = ctx.from.id
 
-  const RECORD_REGEX = /^([A-Za-zА-Яа-я0-9\s]+)\s(-?\d+)$/
+  const RECORD_REGEX = /^([A-Za-zА-Яа-я0-9\s-&@\#]+)\s(-?\d+)$/
   if (RECORD_REGEX.test(ctx.message?.text)) {
     const [_, store, sum] = ctx.message.text.match(RECORD_REGEX)!
 
