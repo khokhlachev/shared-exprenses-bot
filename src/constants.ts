@@ -20,6 +20,10 @@ export const STORE_ABBR_DICT: Record<string, string> = {
   "5ка": "Пятерочка",
   алко: "Алкоголь",
   ам: "Ароматный мир",
+  икеа: "IKEA",
+  ikea: "IKEA",
+  оби: "OBI",
+  obi: "OBI",
 }
 
 export const TG_ID_VERB: Record<string, string> = {
