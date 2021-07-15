@@ -62,10 +62,10 @@ bot.catch((err, ctx) => {
 bot.help((ctx) => ctx.reply(HELP_MESSAGE))
 
 bot.command("abbr", (ctx) => {
-  ctx.reply(
+  ctx.replyWithMarkdown(
     Object.keys(STORE_ABBR_DICT).reduce((acc, k) => {
       return acc + `${k}: ${STORE_ABBR_DICT[k]}\n`
-    }, "")
+    }, "**Список аббревиатур**:\n\n")
   )
 })
 
