@@ -1,3 +1,5 @@
+import { formatNumber } from "./index"
+
 const urlFromConfig = (config: unknown) => {
   /**
    * Telegram replyWithPhoto API method breaks
@@ -66,6 +68,16 @@ export const barChart = ({ title, datasets, labels }: BarChartConfig) => {
       scales: {
         xAxes: [{ stacked: true }],
         yAxes: [{ stacked: true }],
+      },
+      plugins: {
+        datalabels: {
+          anchor: "center",
+          align: "center",
+          color: "#777",
+          font: {
+            weight: "normal",
+          },
+        },
       },
     },
   }
