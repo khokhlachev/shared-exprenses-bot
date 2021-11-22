@@ -6,9 +6,10 @@ import {
   TELEGRAM_BOT_TOKEN,
   ALLOWED_TG_ID,
   BOT_URL,
-} from "./util/secrets"
-import { formatNumber, capitalize } from "./util"
-import { doughnutChart, barChart } from "./util/quickchart"
+} from "./lib/secrets"
+import { formatNumber, capitalize } from "./lib"
+import { doughnutChart, barChart } from "./lib/quickchart"
+import { calc } from "./lib/calc"
 import {
   HELP_MESSAGE,
   STORE_ABBR_DICT,
@@ -157,13 +158,19 @@ bot.command("store_month", async (ctx) => {
 bot.on("text", async (ctx) => {
   const fromId = ctx.from.id
 
-  const RECORD_REGEX = /^(.+)\s(-?\d+)$/
+  const RECORD_REGEX = /^([a-zA-Zа-яА-Я\s]+)\s([\d\(].*)$/
   if (RECORD_REGEX.test(ctx.message?.text)) {
-    const [_, store, sum] = ctx.message.text.match(RECORD_REGEX)!
+    const [_, store, mathExpression] = ctx.message.text.match(RECORD_REGEX)!
 
     const storeFullName = capitalize(
       STORE_ABBR_DICT[store.toLowerCase()] || store
     )
+
+    const sum = calc(mathExpression)
+
+    if (sum === undefined) {
+      throw new Error("failed to evaluate math expression")
+    }
 
     const { error } = await supabase
       .from("expenses")
